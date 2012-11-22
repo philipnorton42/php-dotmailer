@@ -7,14 +7,14 @@ Useage:
 
 To get up and running just provide the class with your API username and password;
 
-  $dotmailer = new DotMailer('username', 'password');
+	$dotmailer = new DotMailer('username', 'password');
 
 You can then interact with the methods using the same method names as described in the API documentation (http://www.dotmailer.co.uk/api/). For example to list all address books on your account just use the following
 
-  $addressBooks = $dotmailer->ListAddressBooks();
-  foreach ($addressBooks as $book) {
-    print $book->ID  . ' => ' . $book->Name . PHP_EOL;
-  }
+	$addressBooks = $dotmailer->ListAddressBooks();
+	foreach ($addressBooks as $book) {
+		print $book->ID  . ' => ' . $book->Name . PHP_EOL;
+	}
 
 Not all API methods are implemented just yet, but more will follow.
 
