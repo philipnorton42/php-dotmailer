@@ -1,0 +1,8 @@
+<phpunit>
+  <php>
+    <var name="username" value=""/>
+    <var name="password" value=""/>
+    <var name="addressBookId" value="" />
+    <var name="campaignId" value="" />    
+  </php>
+</phpunit>
