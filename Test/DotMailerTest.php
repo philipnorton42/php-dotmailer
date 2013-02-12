@@ -34,7 +34,7 @@ class DotMailerTest extends PHPUnit_Framework_TestCase {
     // Start off with an empty address book.
     $this->object->RemoveAllContactsFromAddressBook($this->addressBookId);
   }
-
+  
   public function testNoConstructorParametersCausesException() {
     $this->setExpectedException('UsernameAndPasswordNotFoundException');
     $this->object = new DotMailer('', '');
@@ -340,6 +340,52 @@ class DotMailerTest extends PHPUnit_Framework_TestCase {
   public function testListAddressBooksForCampaignWithAnInvalidCampaignId() {
     $result = $this->object->ListAddressBooksForCampaign(1234546);
     $this->assertFalse($result);
+  }
+
+  public function testListAddressBooksForContact() {
+    $contact = array(
+      'Email' => 'testemail@test.co.uk',
+      'AudienceType' => 'B2B',
+      'OptInType' => 'Single',
+      'EmailType' => 'Html',
+      'Notes' => 'This is an API test contact'
+    );
+    
+    $result = $this->object->ListAddressBooksForContact($contact);
+    $this->assertFalse($result);
+    
+    $fields = array(
+      'FIRSTNAME' => 'John',
+      'LASTNAME' => 'Test'
+    );
+    
+    $this->object->AddContactToAddressBook($contact, $fields, $this->addressBookId);
+
+    $result = $this->object->ListAddressBooksForContact($contact);
+    
+    $this->assertTrue(gettype($result) == 'object');
+    $this->assertTrue($result->ID == $this->addressBookId);
+  }
+
+  public function testSendCampaignToContact() {
+    $contact = array(
+      'Email' => 'testemail@test.co.uk',
+      'AudienceType' => 'B2B',
+      'OptInType' => 'Single',
+      'EmailType' => 'Html',
+      'Notes' => 'This is an API test contact'
+    );
+
+    $fields = array(
+      'FIRSTNAME' => 'John',
+      'LASTNAME' => 'Test'
+    );
+
+    //$this->object->AddContactToAddressBook($contact, $fields, $this->addressBookId);
+    $foundContact = $this->object->GetContactByEmail($contact['Email']);
+    
+    $result = $this->object->SendCampaignToContact($this->campaignId, $foundContact->ID, date('Y-m-d\TH:i:s', strtotime('+5 minutes')));
+    $this->assertTrue($result);
   }
 
   /**
