@@ -267,6 +267,50 @@ class DotMailer {
   }
 
   /**
+   * Remove a contact from an address book.
+   *
+   * @param array $contact                        The basic contact fields.
+   * @param int   $addressBookId                  The ID of the address book.
+   * @param bool  $preventAddressbookResubscribe  Prevent resubscription to the address book.
+   * @param bool  $totalUnsubscribe               Totally unsubscribe this contact.
+   *
+   * @return bool|object FALSE or RemoveContactFromAddressBookResponse.
+   *
+   * @throws MissingRequiredParametersException
+   */
+  public function RemoveContactFromAddressBook($contact, $addressBookId, $preventAddressbookResubscribe, $totalUnsubscribe) {
+    if ($addressBookId == 0 || !is_numeric($addressBookId)) {
+      throw new MissingRequiredParametersException('$addressBookId is required.');
+    }
+
+    if (!is_bool($preventAddressbookResubscribe)) {
+      throw new MissingRequiredParametersException('$preventAddressbookResubscribe must be boolean.');
+    }
+
+    if (!is_bool($totalUnsubscribe)) {
+      throw new MissingRequiredParametersException('$totalUnsubscribe must be boolean.');
+    }
+
+    $contact = $this->validateContact($contact);
+
+    $parameters = array(
+      'username' => $this->username,
+      'password' => $this->password,
+      'contact' => $contact,
+      'addressBookId' => $addressBookId,
+      'preventAddressbookResubscribe' => $preventAddressbookResubscribe,
+      'totalUnsubscribe' => $totalUnsubscribe,
+    );
+
+    $result = $this->makeSoapCall('RemoveContactFromAddressBook', $parameters);
+    if ($result === FALSE) {
+      return FALSE;
+    }
+
+    return $result;
+  }
+
+  /**
    * Convert a type into a XSD constant.
    *
    * @param string $type The type to be converted.
