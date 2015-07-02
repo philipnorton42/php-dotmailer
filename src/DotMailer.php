@@ -1,6 +1,6 @@
 <?php
 
-namespace DotMailer;
+namespace Philipnorton42\DotMailer;
 
 /**
  * @mainpage
@@ -26,28 +26,28 @@ class DotMailer
      * @var string
      */
     private $request_url = 'http://apiconnector.com/api.asmx?WSDL';
-    
+
     /**
      * The username used in the API connection.
      *
      * @var string
      */
     private $username;
-    
+
     /**
      * The password used in the API connection.
      *
      * @var string
      */
     private $password;
-    
+
     /**
      * The SoapClient object.
      *
-     * @var resource 
+     * @var resource
      */
     private $client;
-    
+
     /**
      * Contains any errors generated during the last SoapClient call.
      *
@@ -66,7 +66,7 @@ class DotMailer
     public function __construct($username, $password)
     {
         if ($username == '' && $password == '') {
-            throw new UsernameAndPasswordNotFoundException();
+            throw new \Philipnorton42\DotMailer\Exception\UsernameAndPasswordNotFoundException();
         }
 
         $this->username = $username;
@@ -392,7 +392,7 @@ class DotMailer
             case 'XLS':
                 break;
             default:
-                throw new InvalidFileFormatException('Data type is unknown.');
+                throw new \Philipnorton42\DotMailer\Exception\InvalidFileFormatException('Data type is unknown.');
         }
 
         $encodedData = base64_encode($data);
@@ -452,7 +452,7 @@ class DotMailer
     public function GetAddressBookContactCount($addressBookId)
     {
         if ($addressBookId == 0 || !is_numeric($addressBookId)) {
-            throw new MissingRequiredParametersException('$addressBookId is required.');
+            throw new \Philipnorton42\DotMailer\Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $parameters = array(
@@ -511,7 +511,7 @@ class DotMailer
     public function DeleteAddressBook($addressBookId)
     {
         if ($addressBookId == 0 || !is_numeric($addressBookId)) {
-            throw new MissingRequiredParametersException('$addressBookId is required.');
+            throw new \Philipnorton42\DotMailer\Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $parameters = array(
@@ -779,7 +779,7 @@ class DotMailer
     {
         $date_regex = '/(\-)?\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](Z|(\+|\-)[0-5][0-9]:[0-5][0-9])?/';
         if (preg_match($date_regex, $startDate) == 0) {
-            throw new InvalidDateTimeFormatException('startDate is invalid.');
+            throw new \Philipnorton42\DotMailer\Exception\InvalidDateTimeFormatException('startDate is invalid.');
         }
 
         $parameters = array(
@@ -810,7 +810,7 @@ class DotMailer
     public function GetCampaign($campaignId)
     {
         if (!is_numeric($campaignId)) {
-            throw new InvalidParametersException('Invalid Campaign ID');
+            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid Campaign ID');
         }
 
         $parameters = array(
@@ -840,7 +840,7 @@ class DotMailer
     public function GetCampaignSummary($campaignId)
     {
         if (!is_numeric($campaignId)) {
-            throw new InvalidParametersException('Invalid Campaign ID');
+            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid Campaign ID');
         }
 
         $parameters = array(
@@ -871,7 +871,7 @@ class DotMailer
     public function ListAddressBooksForCampaign($campaignId)
     {
         if (!is_numeric($campaignId)) {
-            throw new InvalidParametersException('Invalid Campaign ID');
+            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid Campaign ID');
         }
 
         $parameters = array(
@@ -928,16 +928,16 @@ class DotMailer
     public function SendCampaignToContact($campaignId, $contactId, $sendDate)
     {
         if (!is_numeric($campaignId)) {
-            throw new InvalidParametersException('Invalid campaign ID given.');
+            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid campaign ID given.');
         }
 
         if (!is_numeric($contactId)) {
-            throw new InvalidParametersException('Invalid contact ID given.');
+            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid contact ID given.');
         }
 
         $date_regex = '/(\-)?\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](Z|(\+|\-)[0-5][0-9]:[0-5][0-9])?/';
         if (preg_match($date_regex, $sendDate) == 0) {
-            throw new InvalidDateTimeFormatException('startDate is invalid.');
+            throw new \Philipnorton42\DotMailer\Exception\InvalidDateTimeFormatException('startDate is invalid.');
         }
 
         $parameters = array(
@@ -971,34 +971,4 @@ class DotMailer
         return true;
     }
 
-}
-
-class DotMailerUsernameAndPasswordNotFoundException extends \Exception
-{
-    
-}
-
-class DotMailerMissingRequiredParametersException extends \Exception
-{
-    
-}
-
-class DotMailerAddressBookNotFoundException extends \Exception
-{
-    
-}
-
-class DotMailerInvalidParametersException extends \Exception
-{
-    
-}
-
-class DotMailerInvalidDateTimeFormatException Extends \InvalidParametersException
-{
-    
-}
-
-class DotMailerInvalidFileFormatException extends \Exception
-{
-    
 }

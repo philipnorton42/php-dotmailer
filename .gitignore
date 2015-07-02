@@ -28,3 +28,9 @@ Thumbs.db
 nbproject
 .komodotools
 .idea
+
+# Other Files #
+###############
+vendor
+build
+composer.lock

@@ -1,6 +1,6 @@
 <?php
 
-require_once '../DotMailer.php';
+use Philipnorton42\DotMailer\DotMailer;
 
 /**
  * Test class for DotMailer.
@@ -34,9 +34,9 @@ class DotMailerTest extends PHPUnit_Framework_TestCase {
     // Start off with an empty address book.
     $this->object->RemoveAllContactsFromAddressBook($this->addressBookId);
   }
-  
+
   public function testNoConstructorParametersCausesException() {
-    $this->setExpectedException('UsernameAndPasswordNotFoundException');
+    $this->setExpectedException('Philipnorton42\DotMailer\Exception\UsernameAndPasswordNotFoundException');
     $this->object = new DotMailer('', '');
   }
 
@@ -48,7 +48,7 @@ class DotMailerTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testListContactsInAddressBookWithIncorrectParameters() {
-    $this->setExpectedException('MissingRequiredParametersException');
+    $this->setExpectedException('Philipnorton42\DotMailer\Exception\MissingRequiredParametersException');
     $contacts = $this->object->ListContactsInAddressBook(0, 10, 0);
   }
 
@@ -350,19 +350,19 @@ class DotMailerTest extends PHPUnit_Framework_TestCase {
       'EmailType' => 'Html',
       'Notes' => 'This is an API test contact'
     );
-    
+
     $result = $this->object->ListAddressBooksForContact($contact);
     $this->assertFalse($result);
-    
+
     $fields = array(
       'FIRSTNAME' => 'John',
       'LASTNAME' => 'Test'
     );
-    
+
     $this->object->AddContactToAddressBook($contact, $fields, $this->addressBookId);
 
     $result = $this->object->ListAddressBooksForContact($contact);
-    
+
     $this->assertTrue(gettype($result) == 'object');
     $this->assertTrue($result->ID == $this->addressBookId);
   }
@@ -383,7 +383,7 @@ class DotMailerTest extends PHPUnit_Framework_TestCase {
 
     //$this->object->AddContactToAddressBook($contact, $fields, $this->addressBookId);
     $foundContact = $this->object->GetContactByEmail($contact['Email']);
-    
+
     $result = $this->object->SendCampaignToContact($this->campaignId, $foundContact->ID, date('Y-m-d\TH:i:s', strtotime('+5 minutes')));
     $this->assertTrue($result);
   }
@@ -394,7 +394,9 @@ class DotMailerTest extends PHPUnit_Framework_TestCase {
    */
   protected function tearDown() {
     // Keep everything clean by removing everything from the address book.
-    $this->object->RemoveAllContactsFromAddressBook($this->addressBookId);
+    if (is_object($this->object)) {
+      $this->object->RemoveAllContactsFromAddressBook($this->addressBookId);
+    }
   }
 
 }
