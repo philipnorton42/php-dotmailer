@@ -66,7 +66,7 @@ class DotMailer
     public function __construct($username, $password)
     {
         if ($username == '' && $password == '') {
-            throw new \Philipnorton42\DotMailer\Exception\UsernameAndPasswordNotFoundException();
+            throw new Exception\UsernameAndPasswordNotFoundException();
         }
 
         $this->username = $username;
@@ -143,7 +143,7 @@ class DotMailer
     {
 
         if ($addressBookId == 0) {
-            throw new MissingRequiredParametersException('$addressBookId is required.');
+            throw new Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $parameters = array(
@@ -175,25 +175,25 @@ class DotMailer
         if (!isset($contact['AudienceType'])) {
             $contact['AudienceType'] = 'B2C';
         } elseif (!in_array($contact['AudienceType'], array('Unknown', 'B2C', 'B2B', 'B2M'))) {
-            throw new InvalidParametersException('AudienceType must be one of Unknown, B2C, B2B or B2M');
+            throw new Exception\InvalidParametersException('AudienceType must be one of Unknown, B2C, B2B or B2M');
         }
 
         if (!isset($contact['OptInType'])) {
             $contact['OptInType'] = 'Single';
         } elseif (!in_array($contact['OptInType'], array('Unknown', 'Single', 'Double', 'VerifiedDouble'))) {
-            throw new InvalidParametersException('OptInType must be one of Unknown, Single, Double or VerifiedDouble');
+            throw new Exception\InvalidParametersException('OptInType must be one of Unknown, Single, Double or VerifiedDouble');
         }
 
         if (!isset($contact['EmailType'])) {
             $contact['EmailType'] = 'Html';
         } elseif (!in_array($contact['EmailType'], array('PlainText', 'Html'))) {
-            throw new InvalidParametersException('EmailType must be one of PlainText or Html');
+            throw new Exception\InvalidParametersException('EmailType must be one of PlainText or Html');
         }
 
         if (!isset($contact['ID'])) {
             $contact['ID'] = -1;
         } elseif (!is_numeric($contact['ID'])) {
-            throw new InvalidParametersException('ID must be a number.');
+            throw new Exception\InvalidParametersException('ID must be a number.');
         }
 
         return $contact;
@@ -211,25 +211,25 @@ class DotMailer
         if (!isset($contact->AudienceType)) {
             $contact->AudienceType = 'B2C';
         } elseif (!in_array($contact->AudienceType, array('Unknown', 'B2C', 'B2B', 'B2M'))) {
-            throw new InvalidParametersException('AudienceType must be one of Unknown, B2C, B2B or B2M');
+            throw new Exception\InvalidParametersException('AudienceType must be one of Unknown, B2C, B2B or B2M');
         }
 
         if (!isset($contact->OptInType)) {
             $contact->OptInType = 'Single';
         } elseif (!in_array($contact->OptInType, array('Unknown', 'Single', 'Double', 'VerifiedDouble'))) {
-            throw new InvalidParametersException('OptInType must be one of Unknown, Single, Double or VerifiedDouble');
+            throw new Exception\InvalidParametersException('OptInType must be one of Unknown, Single, Double or VerifiedDouble');
         }
 
         if (!isset($contact->EmailType)) {
             $contact->EmailType = 'Html';
         } elseif (!in_array($contact->EmailType, array('PlainText', 'Html'))) {
-            throw new InvalidParametersException('EmailType must be one of PlainText or Html');
+            throw new Exception\InvalidParametersException('EmailType must be one of PlainText or Html');
         }
 
         if (!isset($contact->ID)) {
             $contact->ID = -1;
         } elseif (!is_numeric($contact->ID)) {
-            throw new InvalidParametersException('ID must be a number.');
+            throw new Exception\InvalidParametersException('ID must be a number.');
         }
 
         return $contact;
@@ -268,7 +268,7 @@ class DotMailer
     {
 
         if ($addressBookId == 0 || !is_numeric($addressBookId)) {
-            throw new MissingRequiredParametersException('$addressBookId is required.');
+            throw new Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $contact = $this->validateContact($contact);
@@ -352,7 +352,7 @@ class DotMailer
     public function RemoveAllContactsFromAddressBook($addressBookId, $preventAddressbookResubscribe = false, $totalUnsubscribe = false)
     {
         if ($addressBookId == 0) {
-            throw new MissingRequiredParametersException('$addressBookId is required.');
+            throw new Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $parameters = array(
@@ -392,7 +392,7 @@ class DotMailer
             case 'XLS':
                 break;
             default:
-                throw new \Philipnorton42\DotMailer\Exception\InvalidFileFormatException('Data type is unknown.');
+                throw new Exception\InvalidFileFormatException('Data type is unknown.');
         }
 
         $encodedData = base64_encode($data);
@@ -452,7 +452,7 @@ class DotMailer
     public function GetAddressBookContactCount($addressBookId)
     {
         if ($addressBookId == 0 || !is_numeric($addressBookId)) {
-            throw new \Philipnorton42\DotMailer\Exception\MissingRequiredParametersException('$addressBookId is required.');
+            throw new Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $parameters = array(
@@ -511,7 +511,7 @@ class DotMailer
     public function DeleteAddressBook($addressBookId)
     {
         if ($addressBookId == 0 || !is_numeric($addressBookId)) {
-            throw new \Philipnorton42\DotMailer\Exception\MissingRequiredParametersException('$addressBookId is required.');
+            throw new Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $parameters = array(
@@ -779,7 +779,7 @@ class DotMailer
     {
         $date_regex = '/(\-)?\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](Z|(\+|\-)[0-5][0-9]:[0-5][0-9])?/';
         if (preg_match($date_regex, $startDate) == 0) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidDateTimeFormatException('startDate is invalid.');
+            throw new Exception\InvalidDateTimeFormatException('startDate is invalid.');
         }
 
         $parameters = array(
@@ -810,7 +810,7 @@ class DotMailer
     public function GetCampaign($campaignId)
     {
         if (!is_numeric($campaignId)) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid Campaign ID');
+            throw new Exception\InvalidParametersException('Invalid Campaign ID');
         }
 
         $parameters = array(
@@ -840,7 +840,7 @@ class DotMailer
     public function GetCampaignSummary($campaignId)
     {
         if (!is_numeric($campaignId)) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid Campaign ID');
+            throw new Exception\InvalidParametersException('Invalid Campaign ID');
         }
 
         $parameters = array(
@@ -871,7 +871,7 @@ class DotMailer
     public function ListAddressBooksForCampaign($campaignId)
     {
         if (!is_numeric($campaignId)) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid Campaign ID');
+            throw new Exception\InvalidParametersException('Invalid Campaign ID');
         }
 
         $parameters = array(
@@ -928,16 +928,16 @@ class DotMailer
     public function SendCampaignToContact($campaignId, $contactId, $sendDate)
     {
         if (!is_numeric($campaignId)) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid campaign ID given.');
+            throw new Exception\InvalidParametersException('Invalid campaign ID given.');
         }
 
         if (!is_numeric($contactId)) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid contact ID given.');
+            throw new Exception\InvalidParametersException('Invalid contact ID given.');
         }
 
         $date_regex = '/(\-)?\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](Z|(\+|\-)[0-5][0-9]:[0-5][0-9])?/';
         if (preg_match($date_regex, $sendDate) == 0) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidDateTimeFormatException('startDate is invalid.');
+            throw new Exception\InvalidDateTimeFormatException('startDate is invalid.');
         }
 
         $parameters = array(
