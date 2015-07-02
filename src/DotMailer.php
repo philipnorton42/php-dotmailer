@@ -71,7 +71,7 @@ class DotMailer
 
         $this->username = $username;
         $this->password = $password;
-        $this->client = new SoapClient($this->request_url);
+        $this->client = new \SoapClient($this->request_url);
     }
 
     /**
@@ -101,7 +101,7 @@ class DotMailer
         $this->lastFault = false;
         try {
             return $this->client->$method($parameters);
-        } catch (SoapFault $fault) {
+        } catch (\SoapFault $fault) {
             $this->lastFault = $fault;
             return false;
         }
