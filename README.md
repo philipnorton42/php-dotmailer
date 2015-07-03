@@ -3,7 +3,7 @@ PHP-Dotmailer
 
 A class to interact with the dotMailer API. In order to use this class you will need an account (with API access) from dotMailer (http://www.dotmailer.com).
 
-Useage:
+Usage:
 
 To get up and running just provide the class with your API username and password;
 
