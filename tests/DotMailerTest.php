@@ -335,7 +335,7 @@ class DotMailerTest extends PHPUnit_Framework_TestCase {
 
   public function testListAddressBooksForCampaign() {
     $result = $this->object->ListAddressBooksForCampaign($this->campaignId);
-    
+
     //$this->assertTrue(isset($result[0]->ID));
     //$this->assertTrue(is_numeric($result[0]->ID));
   }
