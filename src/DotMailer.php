@@ -10,15 +10,17 @@ use Philipnorton42\DotMailer\Exception\InvalidParametersException;
 use Philipnorton42\DotMailer\Exception\MissingRequiredParametersException;
 use Philipnorton42\DotMailer\Exception\UsernameAndPasswordNotFoundException;
 
-    /**
-     * @mainpage
-     * dotMailer API integration class.
-     *
-     * @author Philip Norton <philipnorton42@gmail.com>
-     *
-     * @see http://www.dotmailer.co.uk/
-     * @see https://github.com/philipnorton42/PHP-Dotmailer
-     */
+/**
+ * @mainpage
+ * dotMailer API integration class.
+ *
+ * @author Philip Norton <philipnorton42@gmail.com>
+ *
+ * @version 0.1
+ *
+ * @see http://www.dotmailer.co.uk/
+ * @see https://github.com/philipnorton42/PHP-Dotmailer
+ */
 
 /**
  * dotMailer API integration class.
