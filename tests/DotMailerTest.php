@@ -129,6 +129,9 @@ class DotMailerTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testGetAddressBookContactCount() {
+    // Start off with an empty address book.
+    $this->object->RemoveAllContactsFromAddressBook($this->addressBookId);
+
     $count = $this->object->GetAddressBookContactCount($this->addressBookId);
     $this->assertEquals(0, $count);
 
@@ -397,9 +400,7 @@ class DotMailerTest extends PHPUnit_Framework_TestCase {
    */
   protected function tearDown() {
     // Keep everything clean by removing everything from the address book.
-    if (is_object($this->object)) {
-      $this->object->RemoveAllContactsFromAddressBook($this->addressBookId);
-    }
+    $this->object->RemoveAllContactsFromAddressBook($this->addressBookId);
   }
 
 }
