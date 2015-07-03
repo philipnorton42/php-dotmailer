@@ -2,15 +2,23 @@
 
 namespace Philipnorton42\DotMailer;
 
-/**
- * @mainpage
- * dotMailer API integration class.
- *
- * @author Philip Norton <philipnorton42@gmail.com>
- *
- * @see http://www.dotmailer.co.uk/
- * @see https://github.com/philipnorton42/PHP-Dotmailer
- */
+use Philipnorton42\DotMailer\Exception\AddressBookNotFoundException;
+use Philipnorton42\DotMailer\Exception\InvalidContactTypeException;
+use Philipnorton42\DotMailer\Exception\InvalidDateTimeFormatException;
+use Philipnorton42\DotMailer\Exception\InvalidFileFormatException;
+use Philipnorton42\DotMailer\Exception\InvalidParametersException;
+use Philipnorton42\DotMailer\Exception\MissingRequiredParametersException;
+use Philipnorton42\DotMailer\Exception\UsernameAndPasswordNotFoundException;
+
+    /**
+     * @mainpage
+     * dotMailer API integration class.
+     *
+     * @author Philip Norton <philipnorton42@gmail.com>
+     *
+     * @see http://www.dotmailer.co.uk/
+     * @see https://github.com/philipnorton42/PHP-Dotmailer
+     */
 
 /**
  * dotMailer API integration class.
@@ -66,12 +74,12 @@ class DotMailer
     public function __construct($username, $password)
     {
         if ($username == '' && $password == '') {
-            throw new \Philipnorton42\DotMailer\Exception\UsernameAndPasswordNotFoundException();
+            throw new Exception\UsernameAndPasswordNotFoundException();
         }
 
         $this->username = $username;
         $this->password = $password;
-        $this->client = new SoapClient($this->request_url);
+        $this->client = new \SoapClient($this->request_url);
     }
 
     /**
@@ -101,7 +109,7 @@ class DotMailer
         $this->lastFault = false;
         try {
             return $this->client->$method($parameters);
-        } catch (SoapFault $fault) {
+        } catch (\SoapFault $fault) {
             $this->lastFault = $fault;
             return false;
         }
@@ -115,8 +123,8 @@ class DotMailer
     public function ListAddressBooks()
     {
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password
+          'username' => $this->username,
+          'password' => $this->password
         );
 
         $result = $this->makeSoapCall('ListAddressBooks', $parameters);
@@ -125,7 +133,10 @@ class DotMailer
             return false;
         }
 
-        return $result->ListAddressBooksResult->APIAddressBook;
+        if (is_array($result->ListAddressBooksResult->APIAddressBook)) {
+            return $result->ListAddressBooksResult->APIAddressBook;
+        }
+        return array($result->ListAddressBooksResult->APIAddressBook);
     }
 
     /**
@@ -143,17 +154,16 @@ class DotMailer
     {
 
         if ($addressBookId == 0) {
-            throw new MissingRequiredParametersException('$addressBookId is required.');
+            throw new Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'addressBookId' => $addressBookId,
-            'select' => $select,
-            'skip' => $skip
+          'username' => $this->username,
+          'password' => $this->password,
+          'addressBookId' => $addressBookId,
+          'select' => $select,
+          'skip' => $skip
         );
-        $result = $this->client->ListContactsInAddressBook($parameters);
 
         $result = $this->makeSoapCall('ListContactsInAddressBook', $parameters);
         if ($result === false || !isset($result->ListContactsInAddressBookResult->APIContact)) {
@@ -175,25 +185,25 @@ class DotMailer
         if (!isset($contact['AudienceType'])) {
             $contact['AudienceType'] = 'B2C';
         } elseif (!in_array($contact['AudienceType'], array('Unknown', 'B2C', 'B2B', 'B2M'))) {
-            throw new InvalidParametersException('AudienceType must be one of Unknown, B2C, B2B or B2M');
+            throw new Exception\InvalidParametersException('AudienceType must be one of Unknown, B2C, B2B or B2M');
         }
 
         if (!isset($contact['OptInType'])) {
             $contact['OptInType'] = 'Single';
         } elseif (!in_array($contact['OptInType'], array('Unknown', 'Single', 'Double', 'VerifiedDouble'))) {
-            throw new InvalidParametersException('OptInType must be one of Unknown, Single, Double or VerifiedDouble');
+            throw new Exception\InvalidParametersException('OptInType must be one of Unknown, Single, Double or VerifiedDouble');
         }
 
         if (!isset($contact['EmailType'])) {
             $contact['EmailType'] = 'Html';
         } elseif (!in_array($contact['EmailType'], array('PlainText', 'Html'))) {
-            throw new InvalidParametersException('EmailType must be one of PlainText or Html');
+            throw new Exception\InvalidParametersException('EmailType must be one of PlainText or Html');
         }
 
         if (!isset($contact['ID'])) {
             $contact['ID'] = -1;
         } elseif (!is_numeric($contact['ID'])) {
-            throw new InvalidParametersException('ID must be a number.');
+            throw new Exception\InvalidParametersException('ID must be a number.');
         }
 
         return $contact;
@@ -211,25 +221,25 @@ class DotMailer
         if (!isset($contact->AudienceType)) {
             $contact->AudienceType = 'B2C';
         } elseif (!in_array($contact->AudienceType, array('Unknown', 'B2C', 'B2B', 'B2M'))) {
-            throw new InvalidParametersException('AudienceType must be one of Unknown, B2C, B2B or B2M');
+            throw new Exception\InvalidParametersException('AudienceType must be one of Unknown, B2C, B2B or B2M');
         }
 
         if (!isset($contact->OptInType)) {
             $contact->OptInType = 'Single';
         } elseif (!in_array($contact->OptInType, array('Unknown', 'Single', 'Double', 'VerifiedDouble'))) {
-            throw new InvalidParametersException('OptInType must be one of Unknown, Single, Double or VerifiedDouble');
+            throw new Exception\InvalidParametersException('OptInType must be one of Unknown, Single, Double or VerifiedDouble');
         }
 
         if (!isset($contact->EmailType)) {
             $contact->EmailType = 'Html';
         } elseif (!in_array($contact->EmailType, array('PlainText', 'Html'))) {
-            throw new InvalidParametersException('EmailType must be one of PlainText or Html');
+            throw new Exception\InvalidParametersException('EmailType must be one of PlainText or Html');
         }
 
         if (!isset($contact->ID)) {
             $contact->ID = -1;
         } elseif (!is_numeric($contact->ID)) {
-            throw new InvalidParametersException('ID must be a number.');
+            throw new Exception\InvalidParametersException('ID must be a number.');
         }
 
         return $contact;
@@ -250,7 +260,7 @@ class DotMailer
         } elseif (is_object($contact)) {
             return $this->validateContactObject($contact);
         }
-        throw new Exception('Invalid contact type found.');
+        throw new Exception\InvalidContactTypeException('Invalid contact type found.');
     }
 
     /**
@@ -268,7 +278,7 @@ class DotMailer
     {
 
         if ($addressBookId == 0 || !is_numeric($addressBookId)) {
-            throw new MissingRequiredParametersException('$addressBookId is required.');
+            throw new Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $contact = $this->validateContact($contact);
@@ -278,35 +288,35 @@ class DotMailer
 
         foreach ($fields as $key => $item) {
             if (is_array($item)) {
-                $values[] = new SoapVar(
-                                $item['data'],
-                                $this->typeConversion($item['type']),
-                                $item['type'],
-                                "http://www.w3.org/2001/XMLSchema"
+                $values[] = new \SoapVar(
+                  $item['data'],
+                  $this->typeConversion($item['type']),
+                  $item['type'],
+                  "http://www.w3.org/2001/XMLSchema"
                 );
             } else {
-                $values[] = new SoapVar(
-                                $item,
-                                XSD_STRING,
-                                "string",
-                                "http://www.w3.org/2001/XMLSchema"
+                $values[] = new \SoapVar(
+                  $item,
+                  XSD_STRING,
+                  "string",
+                  "http://www.w3.org/2001/XMLSchema"
                 );
             }
             $keys[] = $key;
         }
 
         $fields = array(
-            'Keys' => $keys,
-            'Values' => $values
+          'Keys' => $keys,
+          'Values' => $values
         );
 
         $contact['DataFields'] = $fields;
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'contact' => $contact,
-            'addressbookId' => $addressBookId
+          'username' => $this->username,
+          'password' => $this->password,
+          'contact' => $contact,
+          'addressbookId' => $addressBookId
         );
 
         $result = $this->makeSoapCall('AddContactToAddressBook', $parameters);
@@ -352,15 +362,15 @@ class DotMailer
     public function RemoveAllContactsFromAddressBook($addressBookId, $preventAddressbookResubscribe = false, $totalUnsubscribe = false)
     {
         if ($addressBookId == 0) {
-            throw new MissingRequiredParametersException('$addressBookId is required.');
+            throw new Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'addressBookId' => $addressBookId,
-            'preventAddressbookResubscribe' => $preventAddressbookResubscribe,
-            'totalUnsubscribe' => $totalUnsubscribe
+          'username' => $this->username,
+          'password' => $this->password,
+          'addressBookId' => $addressBookId,
+          'preventAddressbookResubscribe' => $preventAddressbookResubscribe,
+          'totalUnsubscribe' => $totalUnsubscribe
         );
 
         $result = $this->makeSoapCall('RemoveAllContactsFromAddressBook', $parameters);
@@ -392,19 +402,19 @@ class DotMailer
             case 'XLS':
                 break;
             default:
-                throw new \Philipnorton42\DotMailer\Exception\InvalidFileFormatException('Data type is unknown.');
+                throw new Exception\InvalidFileFormatException('Data type is unknown.');
         }
 
         $encodedData = base64_encode($data);
 
-        $typedVar = new SoapVar($encodedData, XSD_BASE64BINARY, "string", "http://www.w3.org/2001/XMLSchema");
+        $typedVar = new \SoapVar($encodedData, XSD_BASE64BINARY, "string", "http://www.w3.org/2001/XMLSchema");
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'addressbookID' => $addressBookId,
-            'data' => $typedVar,
-            'dataType' => $dataType
+          'username' => $this->username,
+          'password' => $this->password,
+          'addressbookID' => $addressBookId,
+          'data' => $typedVar,
+          'dataType' => $dataType
         );
 
         $result = $this->makeSoapCall('AddContactsToAddressBookWithProgress', $parameters);
@@ -428,9 +438,9 @@ class DotMailer
     {
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'progressID' => $progressID,
+          'username' => $this->username,
+          'password' => $this->password,
+          'progressID' => $progressID,
         );
 
         $result = $this->makeSoapCall('GetContactImportProgress', $parameters);
@@ -452,13 +462,13 @@ class DotMailer
     public function GetAddressBookContactCount($addressBookId)
     {
         if ($addressBookId == 0 || !is_numeric($addressBookId)) {
-            throw new \Philipnorton42\DotMailer\Exception\MissingRequiredParametersException('$addressBookId is required.');
+            throw new Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'addressbookid' => $addressBookId,
+          'username' => $this->username,
+          'password' => $this->password,
+          'addressbookid' => $addressBookId,
         );
 
         $result = $this->makeSoapCall('GetAddressBookContactCount', $parameters);
@@ -484,9 +494,9 @@ class DotMailer
         $book->ID = -1;
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'book' => $book
+          'username' => $this->username,
+          'password' => $this->password,
+          'book' => $book
         );
 
         $result = $this->makeSoapCall('CreateAddressBook', $parameters);
@@ -511,13 +521,13 @@ class DotMailer
     public function DeleteAddressBook($addressBookId)
     {
         if ($addressBookId == 0 || !is_numeric($addressBookId)) {
-            throw new \Philipnorton42\DotMailer\Exception\MissingRequiredParametersException('$addressBookId is required.');
+            throw new Exception\MissingRequiredParametersException('$addressBookId is required.');
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'addressbookid' => $addressBookId,
+          'username' => $this->username,
+          'password' => $this->password,
+          'addressbookid' => $addressBookId,
         );
 
         $result = $this->makeSoapCall('DeleteAddressBook', $parameters);
@@ -539,9 +549,9 @@ class DotMailer
     public function GetContactByEmail($email)
     {
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'email' => $email
+          'username' => $this->username,
+          'password' => $this->password,
+          'email' => $email
         );
 
         $result = $this->makeSoapCall('GetContactByEmail', $parameters);
@@ -563,9 +573,9 @@ class DotMailer
     public function GetContactById($id)
     {
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'id' => $id
+          'username' => $this->username,
+          'password' => $this->password,
+          'id' => $id
         );
 
         $result = $this->makeSoapCall('GetContactById', $parameters);
@@ -593,25 +603,25 @@ class DotMailer
 
             foreach ($fields as $key => $item) {
                 if (is_array($item)) {
-                    $values[] = new SoapVar($item['data'], $this->typeConversion($item['type']), $item['type'], "http://www.w3.org/2001/XMLSchema");
+                    $values[] = new \SoapVar($item['data'], $this->typeConversion($item['type']), $item['type'], "http://www.w3.org/2001/XMLSchema");
                 } else {
-                    $values[] = new SoapVar($item, XSD_STRING, "string", "http://www.w3.org/2001/XMLSchema");
+                    $values[] = new \SoapVar($item, XSD_STRING, "string", "http://www.w3.org/2001/XMLSchema");
                 }
                 $keys[] = $key;
             }
 
             $fields = array(
-                'Keys' => $keys,
-                'Values' => $values
+              'Keys' => $keys,
+              'Values' => $values
             );
 
             $contact['DataFields'] = $fields;
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'contact' => $contact
+          'username' => $this->username,
+          'password' => $this->password,
+          'contact' => $contact
         );
 
         $result = $this->makeSoapCall('CreateContact', $parameters);
@@ -641,25 +651,25 @@ class DotMailer
 
             foreach ($fields as $key => $item) {
                 if (is_array($item)) {
-                    $values[] = new SoapVar($item['data'], $this->typeConversion($item['type']), $item['type'], "http://www.w3.org/2001/XMLSchema");
+                    $values[] = new \SoapVar($item['data'], $this->typeConversion($item['type']), $item['type'], "http://www.w3.org/2001/XMLSchema");
                 } else {
-                    $values[] = new SoapVar($item, XSD_STRING, "string", "http://www.w3.org/2001/XMLSchema");
+                    $values[] = new \SoapVar($item, XSD_STRING, "string", "http://www.w3.org/2001/XMLSchema");
                 }
                 $keys[] = $key;
             }
 
             $fields = array(
-                'Keys' => $keys,
-                'Values' => $values
+              'Keys' => $keys,
+              'Values' => $values
             );
 
             $contact['DataFields'] = $fields;
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'contact' => $contact
+          'username' => $this->username,
+          'password' => $this->password,
+          'contact' => $contact
         );
 
         $result = $this->makeSoapCall('UpdateContact', $parameters);
@@ -679,8 +689,8 @@ class DotMailer
     public function ListContactDataLabels()
     {
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
+          'username' => $this->username,
+          'password' => $this->password,
         );
 
         $result = $this->makeSoapCall('ListContactDataLabels', $parameters);
@@ -700,8 +710,8 @@ class DotMailer
     public function GetCurrentAccountInfo()
     {
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
+          'username' => $this->username,
+          'password' => $this->password,
         );
 
         $result = $this->makeSoapCall('GetCurrentAccountInfo', $parameters);
@@ -779,19 +789,23 @@ class DotMailer
     {
         $date_regex = '/(\-)?\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](Z|(\+|\-)[0-5][0-9]:[0-5][0-9])?/';
         if (preg_match($date_regex, $startDate) == 0) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidDateTimeFormatException('startDate is invalid.');
+            throw new Exception\InvalidDateTimeFormatException('startDate is invalid.');
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'startDate' => $startDate
+          'username' => $this->username,
+          'password' => $this->password,
+          'startDate' => $startDate
         );
 
         $result = $this->makeSoapCall('ListSentCampaignsWithActivitySinceDate', $parameters);
 
         if ($result === false) {
             return false;
+        }
+
+        if (!isset($result->ListSentCampaignsWithActivitySinceDateResult->APICampaign)) {
+            return array();
         }
 
         return $result->ListSentCampaignsWithActivitySinceDateResult->APICampaign;
@@ -810,13 +824,13 @@ class DotMailer
     public function GetCampaign($campaignId)
     {
         if (!is_numeric($campaignId)) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid Campaign ID');
+            throw new Exception\InvalidParametersException('Invalid Campaign ID');
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'campaignId' => $campaignId
+          'username' => $this->username,
+          'password' => $this->password,
+          'campaignId' => $campaignId
         );
 
         $result = $this->makeSoapCall('GetCampaign', $parameters);
@@ -840,13 +854,13 @@ class DotMailer
     public function GetCampaignSummary($campaignId)
     {
         if (!is_numeric($campaignId)) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid Campaign ID');
+            throw new Exception\InvalidParametersException('Invalid Campaign ID');
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'campaignId' => $campaignId
+          'username' => $this->username,
+          'password' => $this->password,
+          'campaignId' => $campaignId
         );
 
         $result = $this->makeSoapCall('GetCampaignSummary', $parameters);
@@ -871,13 +885,13 @@ class DotMailer
     public function ListAddressBooksForCampaign($campaignId)
     {
         if (!is_numeric($campaignId)) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid Campaign ID');
+            throw new Exception\InvalidParametersException('Invalid Campaign ID');
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'campaignID' => $campaignId
+          'username' => $this->username,
+          'password' => $this->password,
+          'campaignID' => $campaignId
         );
 
         $result = $this->makeSoapCall('ListAddressBooksForCampaign', $parameters);
@@ -900,9 +914,9 @@ class DotMailer
         $contact = $this->validateContact($contact);
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'contact' => $contact
+          'username' => $this->username,
+          'password' => $this->password,
+          'contact' => $contact
         );
 
         $result = $this->makeSoapCall('ListAddressBooksForContact', $parameters);
@@ -928,24 +942,24 @@ class DotMailer
     public function SendCampaignToContact($campaignId, $contactId, $sendDate)
     {
         if (!is_numeric($campaignId)) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid campaign ID given.');
+            throw new Exception\InvalidParametersException('Invalid campaign ID given.');
         }
 
         if (!is_numeric($contactId)) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidParametersException('Invalid contact ID given.');
+            throw new Exception\InvalidParametersException('Invalid contact ID given.');
         }
 
         $date_regex = '/(\-)?\d{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](Z|(\+|\-)[0-5][0-9]:[0-5][0-9])?/';
         if (preg_match($date_regex, $sendDate) == 0) {
-            throw new \Philipnorton42\DotMailer\Exception\InvalidDateTimeFormatException('startDate is invalid.');
+            throw new Exception\InvalidDateTimeFormatException('startDate is invalid.');
         }
 
         $parameters = array(
-            'username' => $this->username,
-            'password' => $this->password,
-            'campaignId' => $campaignId,
-            'contactid' => $contactId,
-            'sendDate' => $sendDate
+          'username' => $this->username,
+          'password' => $this->password,
+          'campaignId' => $campaignId,
+          'contactid' => $contactId,
+          'sendDate' => $sendDate
         );
 
         $result = $this->makeSoapCall('SendCampaignToContact', $parameters);
