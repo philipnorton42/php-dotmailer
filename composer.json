@@ -1,5 +1,5 @@
 {
-  "name" : "Philipnorton42/DotMailer",
+  "name" : "philipnorton42/php-dotmailer",
   "description" : "A library that allows integration with the dotMailer API.",
   "type" : "library",
   "license": "MIT",
